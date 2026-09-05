@@ -21,14 +21,18 @@ function AuthenticatedApp() {
     queryKey: ["role"],
     queryFn: adminApi.fetchRole,
     enabled: isAuthenticated,
+    retry: false,
   });
 
-  const { data: accountStatus, isLoading: isLoadingAccount } = useQuery({
+  const { data: accountStatus } = useQuery({
     queryKey: ["accountStatus"],
     queryFn: adminApi.fetchAccountStatus,
-    enabled: isAuthenticated && !roleData?.isAdmin,
+    enabled: isAuthenticated && roleData !== undefined && !roleData?.isAdmin,
+    retry: false,
   });
 
+  // Solo mostrar spinner mientras carga el estado de autenticación inicial
+  // o mientras carga el rol (necesario para saber qué pantalla mostrar)
   if (isLoading || (isAuthenticated && isLoadingRole)) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-100">
