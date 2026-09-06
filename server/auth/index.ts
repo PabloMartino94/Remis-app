@@ -148,14 +148,16 @@ export function registerAuthRoutes(app: Express): void {
   app.post("/api/auth/login", (req, res, next) => {
     passport.authenticate("local", (err: any, user: any, info: any) => {
       if (err) {
-        return res.status(500).json({ message: "Error de servidor" });
+        console.error("Auth error:", err);
+        return res.status(500).json({ message: "Error de servidor (auth): " + String(err) });
       }
       if (!user) {
         return res.status(401).json({ message: info?.message || "Email o contraseña incorrectos" });
       }
       req.login(user, (loginErr) => {
         if (loginErr) {
-          return res.status(500).json({ message: "Error al iniciar sesión" });
+          console.error("Login error:", loginErr);
+          return res.status(500).json({ message: "Error al iniciar sesión: " + String(loginErr) });
         }
         const { passwordHash: _, ...userWithoutPassword } = user;
         res.json(userWithoutPassword);
