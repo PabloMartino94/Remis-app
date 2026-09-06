@@ -4,7 +4,7 @@ import session from "express-session";
 import connectPg from "connect-pg-simple";
 import bcrypt from "bcryptjs";
 import type { Express, RequestHandler } from "express";
-import { db } from "../db";
+import { db, client } from "../db";
 import { users } from "@shared/models/auth";
 import { eq } from "drizzle-orm";
 import { sendNewUserNotification } from "../resend-service";
@@ -15,7 +15,7 @@ export async function setupAuth(app: Express) {
   const sessionTtl = 7 * 24 * 60 * 60 * 1000; // 1 week
   const PgStore = connectPg(session);
   const sessionStore = new PgStore({
-    conString: process.env.DATABASE_URL,
+    pool: client, // Use the existing pg.Pool with SSL configured
     createTableIfMissing: true,
     ttl: sessionTtl,
     tableName: "sessions",
