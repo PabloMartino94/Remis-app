@@ -18,6 +18,8 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { SettingsDialog } from "@/components/settings/SettingsDialog";
 import { AccountStatementDialog } from "@/components/account/AccountStatementDialog";
+import { ReportIssueDialog } from "@/components/ReportIssueDialog";
+import { Bug } from "lucide-react";
 
 export function Header() {
   const { currentDate, setCurrentDate } = useApp();
@@ -80,6 +82,12 @@ export function Header() {
                   <FileText className="mr-2 h-4 w-4" />
                   Estado de Cuenta
                 </DropdownMenuItem>
+                <ReportIssueDialog>
+                  <DropdownMenuItem onSelect={(e) => e.preventDefault()} data-testid="button-report-issue">
+                    <Bug className="mr-2 h-4 w-4" />
+                    Reportar Problema
+                  </DropdownMenuItem>
+                </ReportIssueDialog>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => logout()} className="text-red-600" data-testid="button-logout">
                   <LogOut className="mr-2 h-4 w-4" />

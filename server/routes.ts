@@ -1,7 +1,8 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertTripSchema, insertExpenseSchema, updateUserSettingsSchema } from "@shared/schema";
+import { db } from "./db";
+import { insertTripSchema, insertExpenseSchema, updateUserSettingsSchema, reports } from "@shared/schema";
 import { z } from "zod";
 import { setupAuth, registerAuthRoutes, isAuthenticated } from "./auth";
 import { registerAdminRoutes } from "./admin-routes";
@@ -150,6 +151,29 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error deleting expense:", error);
       res.status(500).json({ error: "Failed to delete expense" });
+    }
+  });
+
+  app.post("/api/reports", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.id;
+      const { type, message } = req.body;
+      
+      if (!type || !message) {
+        return res.status(400).json({ error: "Tipo y mensaje son requeridos" });
+      }
+      
+      // Save to database directly
+      const [report] = await db.insert(reports).values({
+        userId,
+        type,
+        message,
+      }).returning();
+
+      res.status(201).json(report);
+    } catch (error) {
+      console.error("Error creating report:", error);
+      res.status(500).json({ error: "Failed to create report" });
     }
   });
 

@@ -58,6 +58,19 @@ export const updateUserSettingsSchema = insertUserSettingsSchema.omit({ userId: 
 
 export type UserSettings = typeof userSettings.$inferSelect;
 export type InsertUserSettings = z.infer<typeof insertUserSettingsSchema>;
+
+export const reports = pgTable("reports", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull(),
+  type: varchar("type", { length: 50 }).notNull(), // 'bug' | 'feature' | 'other'
+  message: text("message").notNull(),
+  status: varchar("status", { length: 20 }).notNull().default('open'),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertReportSchema = createInsertSchema(reports).omit({ id: true, createdAt: true, status: true });
+export type Report = typeof reports.$inferSelect;
+export type InsertReport = z.infer<typeof insertReportSchema>;
 export type UpdateUserSettings = z.infer<typeof updateUserSettingsSchema>;
 
 export const userAccounts = pgTable("user_accounts", {
